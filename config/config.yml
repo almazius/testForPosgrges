@@ -1,0 +1,8 @@
+Postgres:
+  user: ""
+  password: ""
+  host: ""
+  port: ""
+  dbname: ""
+System:
+  Frequency: 3

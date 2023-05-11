@@ -1,0 +1,9 @@
+- path: /home/sigy/GolandProjects/testForPosgrges
+  commands:
+    - echo wow
+  log_file: log2.out
+  exclude_regexp:
+    - log2.out
+
+
+- path: /home/sigy/GolandProjects/testForPosgrges
