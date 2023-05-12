@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func BashCmd(commands []string) {
+func BashCmd(commands []string, logger *log.Logger) {
 	for _, command := range commands {
 		t := parseCmd(command)
 		var cmd *exec.Cmd
@@ -17,7 +17,11 @@ func BashCmd(commands []string) {
 		}
 		err := cmd.Run()
 		if err != nil {
-			log.Print(err)
+			if logger != nil {
+				logger.Print(err)
+			} else {
+				log.Print(err)
+			}
 			break
 		}
 	}

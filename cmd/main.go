@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-
+	fmt.Printf("Progmar is worked\n")
 	viperConf, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)

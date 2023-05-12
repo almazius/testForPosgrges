@@ -58,6 +58,7 @@ func SetHashFromRepository(dir *models.Directory) error {
 			} else {
 				log.Print(err)
 			}
+			return err
 		}
 		if isExist {
 			_, err := Connect.Queryx(`UPDATE hashes set path=$1, hash=$2 WHERE path=$1`, file, hash)
@@ -67,6 +68,7 @@ func SetHashFromRepository(dir *models.Directory) error {
 				} else {
 					log.Print(err)
 				}
+				return err
 			}
 		} else {
 			_, err := Connect.Queryx(`INSERT INTO hashes values($1,$2)`, file, hash)
@@ -76,6 +78,7 @@ func SetHashFromRepository(dir *models.Directory) error {
 				} else {
 					log.Print(err)
 				}
+				return err
 			}
 		}
 	}

@@ -19,11 +19,6 @@ import (
 func CheckDir(dir *models.Directory) error {
 	err := OpenDir(dir)
 	if err != nil {
-		if dir.LogThread != nil {
-			dir.LogThread.Print(err)
-		} else {
-			log.Print(err)
-		}
 		return err
 	}
 
@@ -32,21 +27,17 @@ func CheckDir(dir *models.Directory) error {
 		return err
 	}
 	oldHashes, err := repository.GetHashFromRepository(dir)
-	if dir.LogThread != nil {
-		dir.LogThread.Print(err)
-	} else {
-		log.Print(err)
+	if err != nil {
+		return err
 	}
 	if !CompareHashes(*dir, oldHashes) {
 		// bashCmd
 		fmt.Printf("change in %s\n", dir.Path)
 
-		bashCmd.BashCmd(dir.Command)
+		bashCmd.BashCmd(dir.Command, dir.LogThread)
 		err := repository.SetHashFromRepository(dir)
-		if dir.LogThread != nil {
-			dir.LogThread.Print(err)
-		} else {
-			log.Print(err)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -82,30 +73,36 @@ func OpenDir(dir *models.Directory) error { // получает все адре�
 func CheckRegex(path string, include, exclude []string, logger *log.Logger) bool {
 	fileName := path[strings.LastIndex(path, "/")+1:]
 	if exclude != nil {
-		for _, expr := range exclude {
-			res, err := regexp.Match(expr, []byte(fileName))
-			if err != nil {
-				if logger != nil {
-					logger.Print(err)
-				} else {
-					log.Print(err)
+		for i, expr := range exclude {
+			if expr != "" {
+				res, err := regexp.Match(expr, []byte(fileName)) // >>>>>
+				if err != nil {
+					if logger != nil {
+						logger.Print(err)
+					} else {
+						log.Print(err)
+					}
+					exclude[i] = ""
+				} else if res == true {
+					return false
 				}
-			} else if res == true {
-				return false
 			}
 		}
 	}
 	if include != nil {
-		for _, expr := range include {
-			res, err := regexp.Match(expr, []byte(fileName))
-			if err != nil {
-				if logger != nil {
-					logger.Print(err)
-				} else {
-					log.Print(err)
+		for i, expr := range include {
+			if expr != "" {
+				res, err := regexp.Match(expr, []byte(fileName))
+				if err != nil {
+					if logger != nil {
+						logger.Print(err)
+					} else {
+						log.Print(err)
+					}
+					include[i] = ""
+				} else if res == false {
+					return false
 				}
-			} else if res == false {
-				return false
 			}
 		}
 	}

@@ -3,7 +3,14 @@
     - echo wow
   log_file: log2.out
   exclude_regexp:
-    - log2.out
-
+    - log2.out$
+    - (
+- path: /home/user/project1
+  commands:
+    - go build -o ./build/bin/app1 cmd/service/main.go
+    - go run ./build/bin/app1
+- path: /home/user/project2
+  commands:
+    - go test ./...
 
 - path: /home/sigy/GolandProjects/testForPosgrges
