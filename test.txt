@@ -17,19 +17,3 @@
     - go test ./...
 
 - path: /home/sigy/GolandProjects/testForPosgrges
-dkjgjthgkhjdfhj
-fgkjhdjifkh
-]dfth
-fdh
-ft
-dh
-fth
-fdh
-df
-dyfg
-j
-dygj
-dgy
-jkd
-tykj
-ydtkj
