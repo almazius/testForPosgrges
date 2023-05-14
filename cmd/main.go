@@ -13,6 +13,8 @@ import (
 
 func main() {
 	fmt.Printf("Progmar is worked\n")
+
+	//загрузка конфига из файла config.yml
 	viperConf, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -21,17 +23,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// создание подключения к бд, оно будет активно все время работы программы
 	repository.Connect, err = repository.InitPsqlDB(conf)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	models.Frequency = conf.System.Frequency
-
-	err = repository.Connect.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	dirs, err := parser.Parser("test.txt")
 	if err != nil {
@@ -46,6 +45,7 @@ func main() {
 	fmt.Scan(&t)
 }
 
+// endlessCycle Функция, реализующая бесконечный цикл
 func endlessCycle(dir *models.Directory) {
 	for {
 		err := checkDir.CheckDir(dir)

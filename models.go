@@ -12,7 +12,6 @@ type Directory struct {
 	ExcludeRegexp []string
 	IncludeRegexp []string
 	FileHash      map[string]string
-	Changed       []string
 }
 
 var Frequency float64

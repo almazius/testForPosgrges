@@ -8,6 +8,9 @@ import (
 
 func BashCmd(commands []string, logger *log.Logger) {
 	for _, command := range commands {
+		if logger != nil {
+			logger.Print(command)
+		}
 		t := parseCmd(command)
 		var cmd *exec.Cmd
 		if len(t) == 1 {
@@ -15,7 +18,8 @@ func BashCmd(commands []string, logger *log.Logger) {
 		} else if len(t) > 1 {
 			cmd = exec.Command(t[0], t[1:]...)
 		}
-		err := cmd.Run()
+		//err := cmd.Run()
+		stdOut, err := cmd.CombinedOutput()
 		if err != nil {
 			if logger != nil {
 				logger.Print(err)
@@ -24,6 +28,10 @@ func BashCmd(commands []string, logger *log.Logger) {
 			}
 			break
 		}
+		if logger != nil {
+			logger.Printf("\t%s", stdOut)
+		}
+
 	}
 }
 

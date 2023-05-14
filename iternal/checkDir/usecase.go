@@ -17,12 +17,12 @@ import (
 )
 
 func CheckDir(dir *models.Directory) error {
-	err := OpenDir(dir)
+	err := openDir(dir)
 	if err != nil {
 		return err
 	}
 
-	err = CalcHashForFiles(dir)
+	err = saveHashForFiles(dir)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func CheckDir(dir *models.Directory) error {
 	if err != nil {
 		return err
 	}
-	if !CompareHashes(*dir, oldHashes) {
+	if !compareHashes(*dir, oldHashes) {
 		// bashCmd
 		fmt.Printf("change in %s\n", dir.Path)
 
@@ -43,25 +43,22 @@ func CheckDir(dir *models.Directory) error {
 	return nil
 }
 
-func OpenDir(dir *models.Directory) error { // получает все адреса фалов в папке
+// openDir получает все адреса фалов в папке
+func openDir(dir *models.Directory) error {
 	err := filepath.Walk(dir.Path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
 			if !info.IsDir() {
-				if CheckRegex(path, dir.IncludeRegexp, dir.ExcludeRegexp, dir.LogThread) {
+				if checkRegex(path, dir.IncludeRegexp, dir.ExcludeRegexp) {
 					dir.FileHash[path] = ""
 				}
 			}
 			return nil
 		})
 	if err != nil {
-		if dir.LogThread != nil {
-			dir.LogThread.Print(err)
-		} else {
-			log.Print(err)
-		}
+		log.Print(err)
 		return err
 	}
 
@@ -70,18 +67,15 @@ func OpenDir(dir *models.Directory) error { // получает все адре�
 	return err
 }
 
-func CheckRegex(path string, include, exclude []string, logger *log.Logger) bool {
+// checkRegex проверяет название файлов на наличие exclude и include
+func checkRegex(path string, include, exclude []string) bool {
 	fileName := path[strings.LastIndex(path, "/")+1:]
 	if exclude != nil {
 		for i, expr := range exclude {
 			if expr != "" {
-				res, err := regexp.Match(expr, []byte(fileName)) // >>>>>
+				res, err := regexp.Match(expr, []byte(fileName))
 				if err != nil {
-					if logger != nil {
-						logger.Print(err)
-					} else {
-						log.Print(err)
-					}
+					log.Print(err)
 					exclude[i] = ""
 				} else if res == true {
 					return false
@@ -94,11 +88,8 @@ func CheckRegex(path string, include, exclude []string, logger *log.Logger) bool
 			if expr != "" {
 				res, err := regexp.Match(expr, []byte(fileName))
 				if err != nil {
-					if logger != nil {
-						logger.Print(err)
-					} else {
-						log.Print(err)
-					}
+
+					log.Print(err)
 					include[i] = ""
 				} else if res == false {
 					return false
@@ -109,46 +100,41 @@ func CheckRegex(path string, include, exclude []string, logger *log.Logger) bool
 	return true
 }
 
-func CompareHashes(dir models.Directory, old map[string]string) bool { // true - equal, false = no equal
+// compareHashes сравнивает старую и новые хеш-суммы файлов. Если они равны true, иначе false
+func compareHashes(dir models.Directory, old map[string]string) bool {
 	res := true
 	for file, hash := range dir.FileHash {
 		if oldHash, _ := old[file]; oldHash != hash {
-			if dir.Changed == nil {
-				dir.Changed = make([]string, 0)
-			}
-			dir.Changed = append(dir.Changed, file)
 			res = false
 		}
 	}
 	return res
 }
 
-func CalcHashForFiles(dir *models.Directory) error {
+// saveHashForFiles сохраняет хеш-сумму каждого файла в директории
+func saveHashForFiles(dir *models.Directory) error {
 	for file, _ := range dir.FileHash {
 		thread, err := os.Open(file)
 		if err != nil {
-			if dir.LogThread != nil {
-				dir.LogThread.Print(err)
-			} else {
-				log.Print(err)
-			}
+
+			log.Print(err)
+
 			return err
 		}
 		dir.FileHash[file] = fmt.Sprintf("%x", getHash(thread))
 		err = thread.Close()
 		if err != nil {
-			if dir.LogThread != nil {
-				dir.LogThread.Print(err)
-			} else {
-				log.Print(err)
-			}
+
+			log.Print(err)
+
 			return err
 		}
 	}
 	return nil
 }
 
-func getHash(file io.Reader) hash.Hash { // get hash file
+// getHash вычисляет хеш-сумму файла
+func getHash(file io.Reader) hash.Hash {
 	scanner := bufio.NewScanner(file)
 	fileHash := md5.New()
 	for scanner.Scan() {

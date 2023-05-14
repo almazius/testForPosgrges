@@ -11,6 +11,7 @@ import (
 	"testForPosgrges/iternal/logger"
 )
 
+// Parser Функция, которая занимается парсингом файла с заданными инструкциями
 func Parser(path string) ([]models.Directory, error) { // смесь массива и мапы позволяют решить проблему колизий
 	dirs := make(map[string]map[string][]string) // map dir - type_cmd - cmd
 	file, err := os.Open(path)
