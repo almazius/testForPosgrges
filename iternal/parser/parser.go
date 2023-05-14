@@ -16,7 +16,7 @@ func Parser(path string) ([]models.Directory, error) { // смесь масси�
 	dirs := make(map[string]map[string][]string) // map dir - type_cmd - cmd
 	file, err := os.Open(path)
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
 		return nil, err
 	}
 	defer func(file *os.File) {
@@ -109,6 +109,9 @@ func Parser(path string) ([]models.Directory, error) { // смесь масси�
 			tempDir.ExcludeRegexp = make([]string, 0, len(dirs[pathDir]["exclude_regexp"]))
 			for _, cmd := range dirs[pathDir]["exclude_regexp"] {
 				tempDir.ExcludeRegexp = append(tempDir.ExcludeRegexp, cmd)
+			}
+			if tempDir.LogFile != "" {
+				tempDir.ExcludeRegexp = append(tempDir.ExcludeRegexp, "^"+tempDir.LogFile+"$")
 			}
 		}
 		tempDir.FileHash = make(map[string]string)

@@ -61,9 +61,6 @@ func openDir(dir *models.Directory) error {
 		log.Print(err)
 		return err
 	}
-
-	//getHasgFromReposiyory()
-
 	return err
 }
 
@@ -103,8 +100,8 @@ func checkRegex(path string, include, exclude []string) bool {
 // compareHashes сравнивает старую и новые хеш-суммы файлов. Если они равны true, иначе false
 func compareHashes(dir models.Directory, old map[string]string) bool {
 	res := true
-	for file, hash := range dir.FileHash {
-		if oldHash, _ := old[file]; oldHash != hash {
+	for file, fileHash := range dir.FileHash {
+		if oldHash, _ := old[file]; oldHash != fileHash {
 			res = false
 		}
 	}
@@ -116,17 +113,13 @@ func saveHashForFiles(dir *models.Directory) error {
 	for file, _ := range dir.FileHash {
 		thread, err := os.Open(file)
 		if err != nil {
-
 			log.Print(err)
-
 			return err
 		}
 		dir.FileHash[file] = fmt.Sprintf("%x", getHash(thread))
 		err = thread.Close()
 		if err != nil {
-
 			log.Print(err)
-
 			return err
 		}
 	}
@@ -139,8 +132,11 @@ func getHash(file io.Reader) hash.Hash {
 	fileHash := md5.New()
 	for scanner.Scan() {
 		s := scanner.Text()
-		io.WriteString(fileHash, s)
-		//fileHash.Sum([]byte(s))
+		_, err := io.WriteString(fileHash, s)
+		if err != nil {
+			log.Print(err)
+			return nil
+		}
 	}
 	return fileHash
 }

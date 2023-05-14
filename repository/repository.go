@@ -56,13 +56,13 @@ func SetHashFromRepository(dir *models.Directory) error {
 			return err
 		}
 		if isExist {
-			_, err := Connect.Queryx(`UPDATE hashes set path=$1, hash=$2 WHERE path=$1`, file, hash)
+			_, err := Connect.Exec(`UPDATE hashes set path=$1, hash=$2 WHERE path=$1`, file, hash)
 			if err != nil {
 				log.Print(err)
 				return err
 			}
 		} else {
-			_, err := Connect.Queryx(`INSERT INTO hashes values($1,$2)`, file, hash)
+			_, err := Connect.Exec(`INSERT INTO hashes values($1,$2)`, file, hash)
 			if err != nil {
 				log.Print(err)
 				return err

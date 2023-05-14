@@ -1,9 +1,12 @@
 - path: /home/sigy/GolandProjects/testForPosgrges
   commands:
     - echo wow
+    - echo mey
+    - emho error
+
   log_file: log2.out
+
   exclude_regexp:
-    - log2.out$
     - (
 - path: /home/user/project1
   commands:
@@ -14,3 +17,19 @@
     - go test ./...
 
 - path: /home/sigy/GolandProjects/testForPosgrges
+dkjgjthgkhjdfhj
+fgkjhdjifkh
+]dfth
+fdh
+ft
+dh
+fth
+fdh
+df
+dyfg
+j
+dygj
+dgy
+jkd
+tykj
+ydtkj
